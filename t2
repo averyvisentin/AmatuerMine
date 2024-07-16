@@ -1,4 +1,9 @@
-function Tunnel(length)
+if not turtle then
+    printError("Requires a Turtle")
+    return
+end
+
+local function tunnel(length)
     if type(length) ~= "number" or length < 1 then
         error("Tunnel length must be a positive number")
     end
@@ -42,10 +47,9 @@ function Tunnel(length)
         return true
     end
 
-    local function tryDig(directionFn, detectFn, digFn, attackFn)
-        refuel()
-        while detectFn() do
-            if digFn() then
+    local function tryDig(detect, dig, attack)
+        while detect() do
+            if dig() then
                 collect()
                 sleep(0.5)
             else
@@ -55,14 +59,14 @@ function Tunnel(length)
         return true
     end
 
-    local function tryMove(moveFn, directionFn, detectFn, digFn, attackFn)
+    local function tryMove(move, detect, dig, attack)
         refuel()
-        while not moveFn() do
-            if detectFn() then
-                if not tryDig(directionFn, detectFn, digFn, attackFn) then
+        while not move() do
+            if detect() then
+                if not tryDig(detect, dig, attack) then
                     return false
                 end
-            elseif attackFn() then
+            elseif attack() then
                 collect()
             else
                 sleep(0.5)
@@ -75,12 +79,12 @@ function Tunnel(length)
 
     for n = 1, length do
         turtle.placeDown()
-        tryDig(turtle.turnLeft, turtle.detectUp, turtle.digUp, turtle.attackUp)
+        tryDig(turtle.detectUp, turtle.digUp, turtle.attackUp)
         tryMove(turtle.up, turtle.detectUp, turtle.digUp, turtle.attackUp)
+        turtle.turnLeft()
         tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
-        tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
-        tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
-        tryMove(turtle.down, turtle.detectDown, turtle.digDown, turtle.attackDown)
+        turtle.turnRight()
+        turtle.turnRight()
         tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
         turtle.turnLeft()
 
@@ -100,4 +104,16 @@ function Tunnel(length)
 end
 
 -- Example usage:
-tunnel(20)  -- Tunnel with a length of 20 blocks
+local tArgs = { ... }
+if #tArgs ~= 1 then
+    local programName = arg[0] or fs.getName(shell.getRunningProgram())
+    print("Usage: " .. programName .. " <length>")
+    return
+end
+
+local length = tonumber(tArgs[1])
+if length then
+    tunnel(length)
+else
+    print("Tunnel length must be a positive number")
+end

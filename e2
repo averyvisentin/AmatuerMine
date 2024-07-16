@@ -1,3 +1,15 @@
+local tArgs = { ... }
+if #tArgs ~= 1 then
+    local programName = arg[0] or fs.getName(shell.getRunningProgram())
+    print("Usage: " .. programName .. " <diameter>")
+    return
+end
+-- Mine in a quarry pattern until we hit something we can't dig
+local size = tonumber(tArgs[1])
+if size < 1 then
+    print("Excavate diameter must be positive")
+    return
+end
 function Excavate(size)
     if type(size) ~= "number" or size < 1 then
         error("Excavate diameter must be a positive number")
@@ -275,4 +287,3 @@ function Excavate(size)
     print("Mined " .. collected + unloaded .. " items total.")
 end
 
-excavate(10)
