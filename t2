@@ -1,0 +1,103 @@
+function Tunnel(length)
+    if type(length) ~= "number" or length < 1 then
+        error("Tunnel length must be a positive number")
+    end
+
+    local collected = 0
+
+    local function collect()
+        collected = collected + 1
+        if math.fmod(collected, 25) == 0 then
+            print("Mined " .. collected .. " items.")
+        end
+    end
+
+    local function refuel()
+        local fuelLevel = turtle.getFuelLevel()
+        if fuelLevel == "unlimited" or fuelLevel > 0 then
+            return true
+        end
+
+        local function tryRefuel()
+            for n = 1, 16 do
+                if turtle.getItemCount(n) > 0 then
+                    turtle.select(n)
+                    if turtle.refuel(1) then
+                        turtle.select(1)
+                        return true
+                    end
+                end
+            end
+            turtle.select(1)
+            return false
+        end
+
+        if not tryRefuel() then
+            print("Add more fuel to continue.")
+            while not tryRefuel() do
+                os.pullEvent("turtle_inventory")
+            end
+            print("Resuming Tunnel.")
+        end
+        return true
+    end
+
+    local function tryDig(directionFn, detectFn, digFn, attackFn)
+        refuel()
+        while detectFn() do
+            if digFn() then
+                collect()
+                sleep(0.5)
+            else
+                return false
+            end
+        end
+        return true
+    end
+
+    local function tryMove(moveFn, directionFn, detectFn, digFn, attackFn)
+        refuel()
+        while not moveFn() do
+            if detectFn() then
+                if not tryDig(directionFn, detectFn, digFn, attackFn) then
+                    return false
+                end
+            elseif attackFn() then
+                collect()
+            else
+                sleep(0.5)
+            end
+        end
+        return true
+    end
+
+    print("Tunnelling...")
+
+    for n = 1, length do
+        turtle.placeDown()
+        tryDig(turtle.turnLeft, turtle.detectUp, turtle.digUp, turtle.attackUp)
+        tryMove(turtle.up, turtle.detectUp, turtle.digUp, turtle.attackUp)
+        tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
+        tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
+        tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
+        tryMove(turtle.down, turtle.detectDown, turtle.digDown, turtle.attackDown)
+        tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
+        turtle.turnLeft()
+
+        if n < length then
+            tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack)
+            if not tryMove(turtle.forward, turtle.detect, turtle.dig, turtle.attack) then
+                print("Aborting Tunnel.")
+                break
+            end
+        else
+            print("Tunnel complete.")
+        end
+    end
+
+    print("Tunnel complete.")
+    print("Mined " .. collected .. " items total.")
+end
+
+-- Example usage:
+tunnel(20)  -- Tunnel with a length of 20 blocks
