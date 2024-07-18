@@ -792,6 +792,7 @@ function main()
         user_input()         -- PROCESS USER INPUT
         command_turtles()    -- COMMAND TURTLES
         cycle = cycle + 1
+        os.sleep(0.3)
     end
 end
 

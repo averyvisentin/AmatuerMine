@@ -156,11 +156,11 @@ locations = {
      --     where they sleep.
     greater_home_area = {
         min_x =  -inf,
-        max_x = c.x-3,
+        max_x = c.x-6,
         min_y = c.y+0,
-        max_y = c.y+1,
+        max_y = c.y+2,
         min_z = c.z-1,
-        max_z = c.z+2
+        max_z = c.z+4
     },
 
      -- THE ROOM WHERE THE MAGIC HAPPENS
@@ -217,6 +217,12 @@ locations = {
 
          -- MINING TURTLE HOME EXIT
         [c.x-2 .. ',' .. c.y+1 .. ',' .. c.z-1] = {x = c.x-2, y = c.y+1, z = c.z+0},
+
+         -- SCANNER TURTLE HOME ENTER
+         [c.x-1 .. ',' .. c.y+2 .. ',' .. c.z-1] = {x = c.x-2, y = c.y+2, z = c.z-1},
+
+         -- SCANNER TURTLE HOME EXIT
+        [c.x-2 .. ',' .. c.y+2 .. ',' .. c.z-1] = {x = c.x-2, y = c.y+2, z = c.z+0}, --COPIED FROM MINING TURTLE HOME EXIT AND ENTER AND CHANGED Y TO +2
 
          -- CHUNKY TURTLE HOME EXIT
         [c.x-2 .. ',' .. c.y+1 .. ',' .. c.z+0] = {x = c.x-2, y = c.y+1, z = c.z+1},
@@ -283,7 +289,6 @@ mining_turtle_locations = {
     }
 }
 
-
 chunky_turtle_locations = {
     -- LOCATIONS THAT ARE SPECIFIC TO
     -- MINING TURTLES
@@ -321,6 +326,46 @@ chunky_turtle_locations = {
     waiting_room_to_mine_enter_route = {
         [c.x-2 .. ',' .. c.y+0 .. ',' .. c.z+1] = {x = c.x-1, y = c.y+0, z = c.z+1},
         [c.x-1 .. ',' .. c.y+0 .. ',' .. c.z+1] = {x = c.x-1, y = c.y+0, z = c.z+0},
+        [c.x-1 .. ',' .. c.y+0 .. ',' .. c.z+0] = {x = c.x+0, y = c.y+0, z = c.z+0},
+    }
+}
+
+scanner_turtle_locations = {
+    -- LOCATIONS THAT ARE SPECIFIC TO
+    -- scanner TURTLES
+
+     -- TURTLE HOMES
+     --     this is where the first turtle parking
+     --     spot will be, and each following will
+     --     be in the <increment> direction.
+    homes = {x = c.x-6, y = c.y+0, z = c.z+0, increment = 'south'},
+
+     -- THE AREA ENCOMPASSING THE HOME
+     -- LINE, AS WELL AS THE PATH TURTLES
+     -- TAKE TO GET TO THEIR HOME
+    home_area = {
+        min_x = -inf,
+        max_x = c.x-8,
+        min_y = c.y+0,
+        max_y = c.y+0,
+        min_z = c.z-1,
+        max_z = c.z+4
+    },
+
+     -- WHERE TURTLES ENTER THE LINE TO
+     -- GET TO THEIR HOME
+    home_enter = {x = c.x-2, y = c.y+2, z = c.z-1, orientation = 'west'},
+
+     -- WHERE TURTLES EXIT THEIR HOMES
+    home_exit = {x = c.x-2, y = c.y+2, z = c.z+0},
+
+     -- WHERE TURTLES WAIT TO BE PAIRED
+    waiting_room = {x = c.x+0, y = c.y+0, z = c.z-2},
+
+     -- THE PATH TURTLES WILL TAKE AFTER
+     -- PAIRING
+    waiting_room_to_mine_enter_route = {
+        [c.x-2 .. ',' .. c.y+0 .. ',' .. c.z+0] = {x = c.x-1, y = c.y+0, z = c.z+0},
         [c.x-1 .. ',' .. c.y+0 .. ',' .. c.z+0] = {x = c.x+0, y = c.y+0, z = c.z+0},
     }
 }

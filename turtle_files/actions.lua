@@ -561,6 +561,11 @@ function initialize(session_id, config_values)
         for k, v in pairs(config.chunky_turtle_locations) do
             config.locations[k] = v
         end
+    elseif state.peripheral_right == 'plethora:scanner' or state.peripheral_right == 'scanner' or state.peripheral_left == 'plethora:scanner' or state.peripheral_left == 'scanner' then
+        state.type = 'scanner' -- Assuming 'explorer' is the new type
+        for k, v in pairs(config.scanner_turtle_locations) do
+            config.locations[k] = v
+        end
     else
         state.type = 'mining'
         for k, v in pairs(config.mining_turtle_locations) do
@@ -749,27 +754,14 @@ function mine_vein(direction)
         turtle.select(1)
         if not follow_route(route) then return false end
         ores[str_xyz(state.location)] = nil
-        if detect.up() then
-            safedig('up')
-        end
-        -- Move up after ore retrieval
-        if not move.up then return false end
-        -- Scan adjacent again
-        scan(valid, ores)
-        -- Search for nearest ore again
-        route = fastest_route(valid, state.location, state.orientation, ores)
-        -- Check if there is one again
-        if not route then
-            -- Move back to start position if no ore found
-            break
-        end
-        -- Retrieve ore if found
-        turtle.select(1)
-        if not follow_route(route) then return false end
-        ores[str_xyz(state.location)] = nil
+
     end
 
     if not follow_route(fastest_route(valid, state.location, state.orientation, {[start] = true})) then return false end
+    if detect.up() then
+        safedig('up')
+    end
+    
     return true
 end
 
