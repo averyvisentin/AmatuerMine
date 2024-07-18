@@ -10,7 +10,7 @@ inf = 1e309
 --            Y
 --     ####### #######
 --     ####### #######
-mine_entrance = {x = 104, y = 76, z = 215}
+mine_entrance = {x = 1054, y = 63, z = 1179}
 c = mine_entrance
 
 
@@ -28,7 +28,7 @@ use_chunky_turtles = true
 --     too close means less chance of finding
 --     ore veins, too far means longer commute
 --     times for turtles.
-grid_width = 8
+grid_width = 4
 
 
 -- MAXIMUM MINING AMOUNT PER TRIP
@@ -36,7 +36,7 @@ grid_width = 8
 --     most efficient would be to make this
 --     number huge, but turtles may be gone a
 --     while (plus harder to recall).
-mission_length = 150
+mission_length = 500
 
 
 -- MAXIMUM BLOCKS A TURTLE MINES IN A
@@ -46,7 +46,7 @@ mission_length = 150
 --     continue on a vein even when their
 --     inventory fills up, so this prevents them
 --     losing too many rousources.
-vein_max = 64
+vein_max = 100
 
 
 -- EXTRA FUEL FOR TURTLES TO BRING ALONG,
@@ -101,7 +101,17 @@ mine_levels = {
     -- {level = 40, chance = 0.2},
     -- {level = 12, chance = 0.5},
 
-    {level = 63, chance = 1.0},
+    {level = -40, chance = 0.1},
+    {level = -30, chance = 0.1},
+    {level = -14, chance = 0.1},
+    {level = -12, chance = 0.1},
+    {level = -10, chance = 0.1},
+    {level = -8, chance = 0.1},
+    {level = 4, chance = 0.1},
+    {level = 0, chance = 0.1},
+    {level = 8, chance = 0.1},
+    {level = 10, chance = 0.1},
+    
 }
 
 
@@ -374,6 +384,10 @@ blocktags = {
     --     this is an easy way to detect all but a few ores,
     --     which don't posess this exact tag (for example certus quartzfrom AE2)
     ['forge:ores'] = true,
+    ['c:ores'] = true,
+    ['c:raw_ores'] = true,
+    ['c:gems'] = true,
+    ['c:clusters'] = true,
     -- adds Certus Quartz and Charged Certus Quartz
     ['forge:ores/certus_quartz'] = true
 }
@@ -381,6 +395,8 @@ blocktags = {
 fuelnames = {
     -- ITEMS THE TURTLE CONSIDERS FUEL
     ['minecraft:coal'] = true,
+    ['minecraft:charcoal'] = true,
+    
 }
 
 
@@ -389,7 +405,7 @@ fuelnames = {
 
 -- MAXIMUM ZOOM OUT (INVERSE) OF THE
 -- MAP SCREEN
-monitor_max_zoom_level = 5
+monitor_max_zoom_level = 9
 
 
 -- DEFAULT ZOOM OF THE MAP SCREEN

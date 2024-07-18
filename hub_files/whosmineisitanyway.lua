@@ -259,8 +259,8 @@ end
 
 function follow(chunky_turtle)
     add_task(chunky_turtle, {
-        action = 'go_to_strip',
-        data = {chunky_turtle.strip},
+        action = 'go_to_strip', --we want the chunky turtle to follow the mining turtle based on the location of the mining turtle
+        data = {mining_turtle.strip},
         end_state = 'wait',
     })
 end
@@ -791,7 +791,6 @@ function main()
         print('Cycle: ' .. cycle)
         user_input()         -- PROCESS USER INPUT
         command_turtles()    -- COMMAND TURTLES
-        sleep(0.1)           -- DELAY 0.1 SECONDS
         cycle = cycle + 1
     end
 end

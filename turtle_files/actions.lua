@@ -556,7 +556,7 @@ function initialize(session_id, config_values)
     -- DETERMINE TURTLE TYPE
     state.peripheral_left = peripheral.getType('left')
     state.peripheral_right = peripheral.getType('right')
-    if state.peripheral_left == 'chunkLoader' or state.peripheral_right == 'chunkLoader' or state.peripheral_left == 'chunky' or state.peripheral_right == 'chunky' then
+    if state.peripheral_left == 'chunkLoader' or state.peripheral_right == 'chunkLoader' or state.peripheral_left == 'chunk_vial' or state.peripheral_right == 'chunk_vial' then
         state.type = 'chunky'
         for k, v in pairs(config.chunky_turtle_locations) do
             config.locations[k] = v
@@ -640,14 +640,12 @@ end
 function scan(valid, ores)
     local checked_left  = false
     local checked_right = false
-    
     local f = str_xyz(getblock.forward())
     local u = str_xyz(getblock.up())
     local d = str_xyz(getblock.down())
     local l = str_xyz(getblock.left())
     local r = str_xyz(getblock.right())
     local b = str_xyz(getblock.back())
-    
     if not valid[f] and valid[f] ~= false then
         valid[f] = detect_ore('forward')
         ores[f] = valid[f]
@@ -751,15 +749,27 @@ function mine_vein(direction)
         turtle.select(1)
         if not follow_route(route) then return false end
         ores[str_xyz(state.location)] = nil
-
+        if detect.up() then
+            safedig('up')
+        end
+        -- Move up after ore retrieval
+        if not move.up then return false end
+        -- Scan adjacent again
+        scan(valid, ores)
+        -- Search for nearest ore again
+        route = fastest_route(valid, state.location, state.orientation, ores)
+        -- Check if there is one again
+        if not route then
+            -- Move back to start position if no ore found
+            break
+        end
+        -- Retrieve ore if found
+        turtle.select(1)
+        if not follow_route(route) then return false end
+        ores[str_xyz(state.location)] = nil
     end
 
     if not follow_route(fastest_route(valid, state.location, state.orientation, {[start] = true})) then return false end
-
-    if detect.up() then
-        safedig('up')
-    end
-    
     return true
 end
 
@@ -768,8 +778,84 @@ function clear_gravity_blocks()
     for _, direction in pairs({'forward', 'up'}) do
         while config.gravitynames[ ({inspect[direction]()})[2].name ] do
             safedig(direction)
-            sleep(1)
         end
     end
     return true
+end
+
+function Get_neighbors(node) --a* function
+    local neighbors = {}
+    for _, dir in ipairs({'up', 'down', 'north', 'south', 'east', 'west'}) do
+        -- Assume check_block has been modified to return isOre directly
+        local isOre, blockLocation = Check_block(dir)
+        if not isOre then
+            local neighbor = {
+                x = node.x + (dir == 'east' and 1 or dir == 'west' and -1 or 0),
+                y = node.y + (dir == 'up' and 1 or dir == 'down' and -1 or 0),
+                z = node.z + (dir == 'south' and 1 or dir == 'north' and -1 or 0),
+                location = blockLocation
+            }
+            table.insert(neighbors, neighbor)
+        end
+    end
+    return neighbors
+end
+
+function Lowest_f_score(open_set, f_score)   --a* function
+    local lowest, best_node = math.huge, nil
+    for _, node in ipairs(open_set) do
+        local f = f_score[node.x .. ',' .. node.y .. ',' .. node.z] or math.huge
+        if f < lowest then
+            lowest, best_node = f, node
+        end    end    return best_node
+end
+
+function Reconstruct_path(came_from, current)   --a* function
+    local path = {current}
+    while came_from[current.x .. ',' .. current.y .. ',' .. current.z] do
+        current = came_from[current.x .. ',' .. current.y .. ',' .. current.z]
+        table.insert(path, 1, current)
+    end    return path
+end
+
+function A_star(area, pos, fac, end_locationsl)    -- A* pathfinding algorithm
+    local heuristic = distance(start, goal)
+    local open_set = {start}
+    local came_from = {}
+    local g_score = {[start.x .. ',' .. start.y .. ',' .. start.z] = 0}
+    local f_score = {[start.x .. ',' .. start.y .. ',' .. start.z] = heuristic(start, goal)}
+
+    while #open_set > 0 do
+        local current = Lowest_f_score(open_set, f_score)
+        if current.x == goal.x and current.y == goal.y and current.z == goal.z then
+            return Reconstruct_path(came_from, current)
+        end
+
+        for i, node in ipairs(open_set) do
+            if node.x == current.x and node.y == current.y and node.z == current.z then
+                table.remove(open_set, i)
+                break
+            end
+        end
+        for _, neighbor in ipairs(Get_neighbors(current)) do
+            local tentative_g_score = g_score[current.x .. ',' .. current.y .. ',' .. current.z] + 1
+            if tentative_g_score < (g_score[neighbor.x .. ',' .. neighbor.y .. ',' .. neighbor.z] or math.huge) then
+                came_from[neighbor.x .. ',' .. neighbor.y .. ',' .. neighbor.z] = current
+                g_score[neighbor.x .. ',' .. neighbor.y .. ',' .. neighbor.z] = tentative_g_score
+                f_score[neighbor.x .. ',' .. neighbor.y .. ',' .. neighbor.z] = tentative_g_score + heuristic(neighbor, goal)
+                
+                local is_in_open_set = false
+                for _, node in ipairs(open_set) do
+                    if node.x == neighbor.x and node.y == neighbor.y and node.z == neighbor.z then
+                        is_in_open_set = true
+                        break
+                    end
+                end
+                if not is_in_open_set then
+                    table.insert(open_set, neighbor)
+                end
+            end
+        end
+    end
+    return nil -- No path found
 end
