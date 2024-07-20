@@ -554,19 +554,22 @@ function initialize(session_id, config_values)
     end
     
     -- DETERMINE TURTLE TYPE
+    state.peripheral.modem = peripheral.wrap("modem_1")
+    state.peripheral.scanner = peripheral.wrap("universal_scanner_1")
+    state.peripheral.chunkLoader = peripheral.wrap("chunk_loader_1") --hopefully these will work and allow me to call the scanner
     state.peripheral_left = peripheral.getType('left')
     state.peripheral_right = peripheral.getType('right')
-    if state.peripheral_left == 'lmc_chunkLoader' or state.peripheral_right == 'lmc_chunkLoader' or state.peripheral_left == 'chunk_vial' or state.peripheral_right == 'chunk_vial' then
+    if state.peripheral_left == 'lmc_chunkloader' or state.peripheral_right == 'lmc_chunkloader' or state.peripheral_left == 'chunk_vial' or state.peripheral_right == 'chunk_vial' then
         state.type = 'chunky'
         for k, v in pairs(config.chunky_turtle_locations) do
             config.locations[k] = v
         end
-    elseif state.peripheral_right == 'plethora:scanner' or state.peripheral_right == 'scanner' or state.peripheral_left == 'plethora:scanner' or state.peripheral_left == 'scanner' then
+--[[    elseif state.peripheral_right == 'plethora:scanner' or state.peripheral_right == 'scanner' or state.peripheral_left == 'plethora:scanner' or state.peripheral_left == 'scanner' then
         state.type = 'scanner' -- Assuming 'explorer' is the new type
         for k, v in pairs(config.scanner_turtle_locations) do
             config.locations[k] = v
         end
-    else
+    else]]
         state.type = 'mining'
         for k, v in pairs(config.mining_turtle_locations) do
             config.locations[k] = v
@@ -696,12 +699,9 @@ function fastest_route(area, pos, fac, end_locations)
     local queue = {}
     local explored = {}
     table.insert(queue,
-        {
-            coords = {x = pos.x, y = pos.y, z = pos.z},
+        {    coords = {x = pos.x, y = pos.y, z = pos.z},
             facing = fac,
-            path = '',
-        }
-    )
+            path = '',})
     explored[str_xyz(pos, fac)] = true
 
     while #queue > 0 do
@@ -748,35 +748,10 @@ function mine_vein(direction)
         if not follow_route(route) then return false end
         ores[str_xyz(state.location)] = nil
     end
-
     -- Move back to start
     if not follow_route(fastest_route(valid, state.location, state.orientation, {[start] = true})) then return false end
-    
-    -- Move up and perform additional scan
-    if detect.up() then safedig('up') move.up()
-    if not detect.up() then safedig('up') move.up()
-        valid[str_xyz(state.location)] = true
-        valid[str_xyz(getblock.back(state.location, state.orientation))] = false
-        for i = 1, config.vein_max do
-            -- Scan adjacent
-            scan(valid, ores)
-            -- Search for nearest ore
-            local route = fastest_route(valid, state.location, state.orientation, ores)
-            -- Check if there is one
-            if not route then break end
-            -- Retrieve ore
-            turtle.select(1)
-            if not follow_route(route) then return false end
-            ores[str_xyz(state.location)] = nil
-        end
-    end
-
-    -- Move back to start
-    if not follow_route(fastest_route(valid, state.location, state.orientation, {[start] = true})) then return false end
-
     return true
 end
-end 
 
 
 function clear_gravity_blocks()
