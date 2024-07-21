@@ -564,14 +564,15 @@ function initialize(session_id, config_values)
     return true
 end
 
-    --[[state.peripheral_left = peripheral.getType('left')
+--[[
+state.peripheral_left = peripheral.getType('left')
     state.peripheral_right = peripheral.getType('right')
     if state.peripheral_left == 'lmc_chunkloader' or state.peripheral_right == 'lmc_chunkloader' or state.peripheral_left == 'chunk_vial' or state.peripheral_right == 'chunk_vial' then
         state.type = 'chunky'
         for k, v in pairs(config.chunky_turtle_locations) do
             config.locations[k] = v
         end
---[[    elseif state.peripheral_right == 'plethora:scanner' or state.peripheral_right == 'scanner' or state.peripheral_left == 'plethora:scanner' or state.peripheral_left == 'scanner' then
+    elseif state.peripheral_right == 'plethora:scanner' or state.peripheral_right == 'scanner' or state.peripheral_left == 'plethora:scanner' or state.peripheral_left == 'scanner' then
         state.type = 'scanner' -- Assuming 'explorer' is the new type
         for k, v in pairs(config.scanner_turtle_locations) do
             config.locations[k] = v
@@ -591,7 +592,8 @@ end
     state.request_id = 1
     state.initialized = true
     return true
-end]]
+end
+]]
 
 
 function getcwd()
