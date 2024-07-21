@@ -554,12 +554,9 @@ function initialize(session_id, config_values)
     end
     
     -- DETERMINE TURTLE TYPE
-    state.peripheral.modem = peripheral.wrap("modem_1")
-    state.peripheral.scanner = peripheral.wrap("universal_scanner_1")
-    state.peripheral.chunkLoader = peripheral.wrap("chunk_loader_1") --hopefully these will work and allow me to call the scanner
     state.peripheral_left = peripheral.getType('left')
     state.peripheral_right = peripheral.getType('right')
-    if state.peripheral_left == 'lmc_chunkloader' or state.peripheral_right == 'lmc_chunkloader' or state.peripheral_left == 'chunk_vial' or state.peripheral_right == 'chunk_vial' then
+    if peripheral.find == 'lmc_chunkloader' or peripheral.find == 'chunk_vial'  then
         state.type = 'chunky'
         for k, v in pairs(config.chunky_turtle_locations) do
             config.locations[k] = v
@@ -574,7 +571,7 @@ function initialize(session_id, config_values)
         for k, v in pairs(config.mining_turtle_locations) do
             config.locations[k] = v
         end
-        if state.peripheral_left == 'modem' then
+        if state.peripheral_left == peripheral.find("modem") then
             state.peripheral_right = 'pick'
         else
             state.peripheral_left = 'pick'
