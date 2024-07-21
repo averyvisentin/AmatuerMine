@@ -554,9 +554,19 @@ function initialize(session_id, config_values)
     end
     
     -- DETERMINE TURTLE TYPE
-    state.peripheral_left = peripheral.getType('left')
+    state.peripheral_left = 'modem'
+    state.peripheral_right = 'pick'
+    state.request_id = 1
+    state.type = 'mining'
+    for k, v in pairs(config.mining_turtle_locations) do
+        config.locations[k] = v
+    end
+    return true
+end
+
+    --[[state.peripheral_left = peripheral.getType('left')
     state.peripheral_right = peripheral.getType('right')
-    if peripheral.find == 'lmc_chunkloader' or peripheral.find == 'chunk_vial'  then
+    if state.peripheral_left == 'lmc_chunkloader' or state.peripheral_right == 'lmc_chunkloader' or state.peripheral_left == 'chunk_vial' or state.peripheral_right == 'chunk_vial' then
         state.type = 'chunky'
         for k, v in pairs(config.chunky_turtle_locations) do
             config.locations[k] = v
@@ -566,12 +576,12 @@ function initialize(session_id, config_values)
         for k, v in pairs(config.scanner_turtle_locations) do
             config.locations[k] = v
         end
-    else]]
+    else
         state.type = 'mining'
         for k, v in pairs(config.mining_turtle_locations) do
             config.locations[k] = v
         end
-        if state.peripheral_left == peripheral.find("modem") then
+        if state.peripheral_left == 'modem' then
             state.peripheral_right = 'pick'
         else
             state.peripheral_left = 'pick'
@@ -581,7 +591,7 @@ function initialize(session_id, config_values)
     state.request_id = 1
     state.initialized = true
     return true
-end
+end]]
 
 
 function getcwd()

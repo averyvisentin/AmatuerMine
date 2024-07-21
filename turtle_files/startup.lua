@@ -18,13 +18,9 @@ os.loadAPI('/apis/actions')
 
 -- OPEN REDNET
 for _, side in pairs({'back', 'top', 'left', 'right'}) do
-    if peripheral.find == 'modem' then
-        rednet.open(side)
-        break
-
-    elseif peripheral.getNames() == 'modem' or 'modem_1' then --hopefully this will grab the modem from the peripheral hub
-    rednet.open(side) 
-    break end 
+    if peripheral.find == "modem" then
+        rednet.open("modem")
+        break end
 end
 
 
