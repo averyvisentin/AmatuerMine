@@ -18,9 +18,10 @@ os.loadAPI('/apis/actions')
 
 -- OPEN REDNET
 for _, side in pairs({'back', 'top', 'left', 'right'}) do
-    if peripheral.find == "modem" then
-        rednet.open("modem")
-        break end
+    if peripheral.getType(side) == 'modem' then
+        rednet.open(side)
+        break
+    end
 end
 
 
